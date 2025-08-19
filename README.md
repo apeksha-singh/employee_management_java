@@ -53,6 +53,8 @@ src/
 
 ## Next Steps
 
+-- Start your server: ./gradlew bootRun
+
 - Add more entities (Salary, Projects, etc.)
 - Implement user authentication
 - Add input validation
