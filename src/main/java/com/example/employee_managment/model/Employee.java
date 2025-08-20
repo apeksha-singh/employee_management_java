@@ -25,6 +25,7 @@ public class Employee {
     @Column(name = "last_name", nullable = false)
     private String lastName;
     
+    @NotBlank(message = "Email is required")
     @Email(message = "Please provide a valid email address")
     @Column(name = "email", unique = true, nullable = false)
     private String email;

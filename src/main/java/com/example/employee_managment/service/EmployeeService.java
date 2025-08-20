@@ -43,15 +43,31 @@ public class EmployeeService {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Employee not found with id: " + id));
         
-        // Update fields
-        employee.setFirstName(employeeDetails.getFirstName());
-        employee.setLastName(employeeDetails.getLastName());
-        employee.setPhoneNumber(employeeDetails.getPhoneNumber());
-        employee.setDateOfBirth(employeeDetails.getDateOfBirth());
-        employee.setHireDate(employeeDetails.getHireDate());
-        employee.setSalary(employeeDetails.getSalary());
-        employee.setPosition(employeeDetails.getPosition());
-        employee.setDepartment(employeeDetails.getDepartment());
+        // Update only non-null fields to preserve existing values
+        if (employeeDetails.getFirstName() != null) {
+            employee.setFirstName(employeeDetails.getFirstName());
+        }
+        if (employeeDetails.getLastName() != null) {
+            employee.setLastName(employeeDetails.getLastName());
+        }
+        if (employeeDetails.getPhoneNumber() != null) {
+            employee.setPhoneNumber(employeeDetails.getPhoneNumber());
+        }
+        if (employeeDetails.getDateOfBirth() != null) {
+            employee.setDateOfBirth(employeeDetails.getDateOfBirth());
+        }
+        if (employeeDetails.getHireDate() != null) {
+            employee.setHireDate(employeeDetails.getHireDate());
+        }
+        if (employeeDetails.getSalary() != null) {
+            employee.setSalary(employeeDetails.getSalary());
+        }
+        if (employeeDetails.getPosition() != null) {
+            employee.setPosition(employeeDetails.getPosition());
+        }
+        if (employeeDetails.getDepartment() != null) {
+            employee.setDepartment(employeeDetails.getDepartment());
+        }
         
         return employeeRepository.save(employee);
     }
