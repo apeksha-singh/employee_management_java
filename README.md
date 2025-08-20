@@ -53,7 +53,7 @@ src/
 
 ## Next Steps
 
--- Start your server: ./gradlew bootRun
+-- Start your server: mvn spring-boot:run
 
 - Add more entities (Salary, Projects, etc.)
 - Implement user authentication
