@@ -3,6 +3,8 @@ package com.example.employee_managment.service;
 import com.example.employee_managment.model.Employee;
 import com.example.employee_managment.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +25,13 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
     
-    // Get all employees
+    // Get all employees with pagination
+    public Page<Employee> getAllEmployeesPaginated(Pageable pageable) {
+        return employeeRepository.findAll(pageable);
+    }
+    
+    // Get all employees (deprecated - use paginated version for large datasets)
+    @Deprecated
     public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
     }

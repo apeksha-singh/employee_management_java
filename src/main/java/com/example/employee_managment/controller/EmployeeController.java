@@ -3,12 +3,18 @@ package com.example.employee_managment.controller;
 import com.example.employee_managment.model.Employee;
 import com.example.employee_managment.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -30,11 +36,39 @@ public class EmployeeController {
         }
     }
     
-    // READ ALL - GET /api/employees
+    // READ ALL - GET /api/employees (with pagination)
     @GetMapping
-    public ResponseEntity<List<Employee>> getAllEmployees() {
-        List<Employee> employees = employeeService.getAllEmployees();
-        return new ResponseEntity<>(employees, HttpStatus.OK);
+    public ResponseEntity<Map<String, Object>> getAllEmployees(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        
+        // Validate page size to prevent abuse
+        if (size > 100) {
+            size = 100;
+        }
+        
+        // Convert from 1-based to 0-based for Spring Data
+        int zeroBasedPage = page - 1;
+        
+        Pageable pageable = PageRequest.of(zeroBasedPage, size, 
+            sortDir.equalsIgnoreCase("desc") ? 
+            Sort.by(sortBy).descending() : 
+            Sort.by(sortBy).ascending());
+        
+        Page<Employee> employeePage = employeeService.getAllEmployeesPaginated(pageable);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("employees", employeePage.getContent());
+        response.put("currentPage", page); // Return 1-based page number to user
+        response.put("totalItems", employeePage.getTotalElements());
+        response.put("totalPages", employeePage.getTotalPages());
+        response.put("hasNext", employeePage.hasNext());
+        response.put("hasPrevious", employeePage.hasPrevious());
+        response.put("pageSize", size);
+        
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
     // READ BY ID - GET /api/employees/{id}
