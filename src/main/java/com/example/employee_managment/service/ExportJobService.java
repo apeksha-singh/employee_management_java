@@ -93,26 +93,28 @@ public class ExportJobService {
      * Get filtered employees based on export request
      */
     private List<Employee> getFilteredEmployees(ExportRequest request) {
+        List<Employee> employees;
+        
         if (request.getEmail() != null) {
             // Single employee by email
-            return employeeService.getEmployeeByEmail(request.getEmail())
+            employees = employeeService.getEmployeeByEmail(request.getEmail())
                     .map(List::of)
                     .orElse(List.of());
         } else if (request.getName() != null) {
             // Search by name
-            return employeeService.searchEmployeesByName(request.getName());
+            employees = employeeService.searchEmployeesByName(request.getName());
         } else if (request.getDepartment() != null && request.getPosition() != null) {
             // Filter by department and position
-            return employeeService.findByDepartmentAndPosition(request.getDepartment(), request.getPosition());
+            employees = employeeService.findByDepartmentAndPosition(request.getDepartment(), request.getPosition());
         } else if (request.getDepartment() != null) {
             // Filter by department
-            return employeeService.getEmployeesByDepartment(request.getDepartment());
+            employees = employeeService.getEmployeesByDepartment(request.getDepartment());
         } else if (request.getPosition() != null) {
             // Filter by position
-            return employeeService.getEmployeesByPosition(request.getPosition());
+            employees = employeeService.getEmployeesByPosition(request.getPosition());
         } else if (request.getMinSalary() != null || request.getMaxSalary() != null) {
             // Filter by salary range
-            List<Employee> employees = List.of();
+            employees = List.of();
             if (request.getMinSalary() != null) {
                 employees = employeeService.getEmployeesWithSalaryGreaterThan(request.getMinSalary());
             }
@@ -122,16 +124,130 @@ public class ExportJobService {
                     .filter(emp -> emp.getSalary() != null && emp.getSalary() <= request.getMaxSalary())
                     .toList();
             }
-            return employees;
         } else {
             // No filters - get all employees (limited by size)
-            return employeeService.getAllEmployeesPaginated(
+            employees = employeeService.getAllEmployeesPaginated(
                 org.springframework.data.domain.PageRequest.of(
                     request.getPage() - 1, 
                     request.getSize()
                 )
             ).getContent();
         }
+        
+        // Apply sorting to the filtered results
+        List<Employee> sortedEmployees = applySorting(employees, request.getSortBy(), request.getSortDir());
+        
+        // Debug logging
+        System.out.println("=== EXPORT DEBUG ===");
+        System.out.println("Sort By: " + request.getSortBy());
+        System.out.println("Sort Dir: " + request.getSortDir());
+        System.out.println("Total Employees: " + sortedEmployees.size());
+        System.out.println("First 3 employees after sorting:");
+        sortedEmployees.stream().limit(3).forEach(emp -> 
+            System.out.println("  - " + emp.getFirstName() + " " + emp.getLastName() + " (ID: " + emp.getId() + ")")
+        );
+        System.out.println("==================");
+        
+        return sortedEmployees;
+    }
+    
+    /**
+     * Apply sorting to employee list
+     */
+    private List<Employee> applySorting(List<Employee> employees, String sortBy, String sortDir) {
+        if (employees == null || employees.isEmpty() || sortBy == null) {
+            return employees;
+        }
+        
+        // Normalize sortBy field name
+        String normalizedSortBy = sortBy.toLowerCase().trim();
+        
+        System.out.println("Sorting by: '" + normalizedSortBy + "' with direction: '" + sortDir + "'");
+        
+        return employees.stream()
+            .sorted((e1, e2) -> {
+                int comparison = 0;
+                
+                switch (normalizedSortBy) {
+                    case "id":
+                        comparison = Long.compare(e1.getId(), e2.getId());
+                        break;
+                    case "firstname":
+                        comparison = compareStrings(e1.getFirstName(), e2.getFirstName());
+                        break;
+                    case "lastname":
+                        comparison = compareStrings(e1.getLastName(), e2.getLastName());
+                        break;
+                    case "email":
+                        comparison = compareStrings(e1.getEmail(), e2.getEmail());
+                        break;
+                    case "salary":
+                        comparison = compareDoubles(e1.getSalary(), e2.getSalary());
+                        break;
+                    case "department":
+                        comparison = compareStrings(e1.getDepartment(), e2.getDepartment());
+                        break;
+                    case "position":
+                        comparison = compareStrings(e1.getPosition(), e2.getPosition());
+                        break;
+                    case "hiredate":
+                        comparison = compareDates(e1.getHireDate(), e2.getHireDate());
+                        break;
+                    case "dateofbirth":
+                        comparison = compareDates(e1.getDateOfBirth(), e2.getDateOfBirth());
+                        break;
+                    case "createdat":
+                        comparison = compareDateTimes(e1.getCreatedAt(), e2.getCreatedAt());
+                        break;
+                    case "updatedat":
+                        comparison = compareDateTimes(e1.getUpdatedAt(), e2.getUpdatedAt());
+                        break;
+                    default:
+                        System.out.println("Unknown sort field: '" + normalizedSortBy + "', using default sorting");
+                        comparison = 0;
+                }
+                
+                // Apply sort direction
+                boolean isDescending = "desc".equalsIgnoreCase(sortDir);
+                int result = isDescending ? -comparison : comparison;
+                
+                System.out.println("Comparing: " + e1.getFirstName() + " vs " + e2.getFirstName() + 
+                                 " (comparison: " + comparison + ", result: " + result + ")");
+                
+                return result;
+            })
+            .toList();
+    }
+    
+    /**
+     * Helper methods for comparison
+     */
+    private int compareStrings(String s1, String s2) {
+        if (s1 == null && s2 == null) return 0;
+        if (s1 == null) return -1;
+        if (s2 == null) return 1;
+        return s1.compareToIgnoreCase(s2);
+    }
+    
+    private int compareDoubles(Double d1, Double d2) {
+        if (d1 == null && d2 == null) return 0;
+        if (d1 == null) return -1;
+        if (d2 == null) return 1;
+        return d1.compareTo(d2);
+    }
+    
+    private int compareDates(java.time.LocalDate d1, java.time.LocalDate d2) {
+        if (d1 == null && d2 == null) return 0;
+        if (d1 == null) return -1;
+        if (d2 == null) return 1;
+        return d1.compareTo(d2);
+    }
+    
+    private int compareDateTimes(java.time.LocalDateTime dt1, java.time.LocalDateTime dt2) {
+        if (dt1 == null && dt2 == null) return 0;
+        if (dt1 == null) return -1;
+        if (dt2 == null) return 1;
+        return dt1.compareTo(dt2);
     }
     
     /**
