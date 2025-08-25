@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- 
+        ChangeSet: Add encrypted_email column to employees table
+        
+        This changelog adds a new column for storing encrypted email addresses.
+        The column is nullable to avoid breaking existing data.
+    -->
+
+    <changeSet id="001" author="developer" labels="feature">
+        <addColumn tableName="employees">
+            <column name="encrypted_email" type="varchar(500)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        
+        <!-- Add a comment to document the purpose of this column -->
+        <sql>
+            ALTER TABLE employees MODIFY COLUMN encrypted_email VARCHAR(500) COMMENT 'Encrypted version of the email address for security purposes';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- 
+        This is the master changelog file that references all other changelog files.
+        Liquibase will process these files in the order they are listed.
+        
+        The baseline changelog will contain your existing database schema.
+        Future changes will be added as new changelog files.
+    -->
+
+    <!-- Baseline changelog - contains your existing database schema -->
+    <include file="db/changelog/baseline/db-changelog-baseline.xml" relativeToChangelogFile="false"/>
+
+    <!-- Incremental changes - add new features and modifications -->
+    <include file="db/changelog/changes/db-changelog-001-add-encrypted-email.xml" relativeToChangelogFile="false"/>
+
+</databaseChangeLog>

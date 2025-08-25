@@ -37,6 +37,9 @@ public class Employee {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
     
+    @Column(name = "encrypted_email")
+    private String encryptedEmail;
+    
     @Column(name = "phone_number")
     private String phoneNumber;
     
@@ -107,6 +110,14 @@ public class Employee {
     
     public void setEmail(String email) {
         this.email = email;
+    }
+    
+    public String getEncryptedEmail() {
+        return encryptedEmail;
+    }
+    
+    public void setEncryptedEmail(String encryptedEmail) {
+        this.encryptedEmail = encryptedEmail;
     }
     
     public String getPhoneNumber() {
