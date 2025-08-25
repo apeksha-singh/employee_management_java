@@ -159,6 +159,7 @@
                 <configuration>
                     <propertyFile>${project.basedir}/src/main/resources/liquibase.properties</propertyFile>
                     <changeLogFile>${project.basedir}/src/main/resources/db/changelog/db-changelog-master.xml</changeLogFile>
+                    <searchPath>${project.basedir}/src/main/resources</searchPath>
                 </configuration>
             </plugin>
         </plugins>

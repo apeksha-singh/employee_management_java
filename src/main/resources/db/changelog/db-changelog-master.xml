@@ -18,5 +18,6 @@
 
     <!-- Incremental changes - add new features and modifications -->
     <include file="db/changelog/changes/db-changelog-001-add-encrypted-email.xml" relativeToChangelogFile="false"/>
+    <include file="db/changelog/changes/db-changelog-002-add-encrypted-reference-id.xml" relativeToChangelogFile="false"/>
 
 </databaseChangeLog>

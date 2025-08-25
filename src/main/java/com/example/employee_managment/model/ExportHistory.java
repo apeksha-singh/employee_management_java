@@ -2,8 +2,10 @@ package com.example.employee_managment.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import com.example.employee_managment.annotation.Encrypted;
 
 @Entity
+@EntityListeners(com.example.employee_managment.service.encryption.EncryptionEntityListener.class)
 @Table(name = "export_history", indexes = {
     @Index(name = "idx_export_reference_id", columnList = "reference_id"),
     @Index(name = "idx_export_status", columnList = "status"),
@@ -17,6 +19,10 @@ public class ExportHistory {
     
     @Column(name = "reference_id", unique = true, nullable = false, length = 50)
     private String referenceId;
+    
+    @Encrypted(sourceField = "referenceId", autoPopulate = true)
+    @Column(name = "encrypted_reference_id")
+    private String encryptedReferenceId;
     
     @Column(name = "user_id", length = 100)
     private String userId;
@@ -87,6 +93,9 @@ public class ExportHistory {
     
     public String getReferenceId() { return referenceId; }
     public void setReferenceId(String referenceId) { this.referenceId = referenceId; }
+    
+    public String getEncryptedReferenceId() { return encryptedReferenceId; }
+    public void setEncryptedReferenceId(String encryptedReferenceId) { this.encryptedReferenceId = encryptedReferenceId; }
     
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
