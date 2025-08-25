@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.example.employee_managment.controller.EmployeeControllerTest
--------------------------------------------------------------------------------
-Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.370 s -- in com.example.employee_managment.controller.EmployeeControllerTest

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- 
+        BASELINE CHANGELOG - This represents your existing database schema
+        
+        This changelog captures the current state of your database tables
+        that were created by Hibernate. All future changes will be incremental
+        from this baseline.
+        
+        IMPORTANT: This represents "version 0" of your database schema.
+    -->
+
+    <!-- Baseline: Create employees table -->
+    <changeSet id="baseline-001" author="baseline" labels="baseline">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="employees"/>
+            </not>
+        </preConditions>
+        <createTable tableName="employees">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="phone_number" type="varchar(255)"/>
+            <column name="date_of_birth" type="date"/>
+            <column name="hire_date" type="date"/>
+            <column name="salary" type="double precision"/>
+            <column name="position" type="varchar(255)"/>
+            <column name="department" type="varchar(255)"/>
+            <column name="created_at" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <!-- Create indexes for employees table -->
+        <createIndex tableName="employees" indexName="idx_employee_email">
+            <column name="email"/>
+        </createIndex>
+        
+        <createIndex tableName="employees" indexName="idx_employee_department">
+            <column name="department"/>
+        </createIndex>
+        
+        <createIndex tableName="employees" indexName="idx_employee_position">
+            <column name="position"/>
+        </createIndex>
+        
+        <createIndex tableName="employees" indexName="idx_employee_salary">
+            <column name="salary"/>
+        </createIndex>
+        
+        <createIndex tableName="employees" indexName="idx_employee_hire_date">
+            <column name="hire_date"/>
+        </createIndex>
+        
+        <createIndex tableName="employees" indexName="idx_employee_name">
+            <column name="first_name"/>
+            <column name="last_name"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Baseline: Create export_history table -->
+    <changeSet id="baseline-002" author="baseline" labels="baseline">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="export_history"/>
+            </not>
+        </preConditions>
+        <createTable tableName="export_history">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="reference_id" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="user_id" type="varchar(100)"/>
+            <column name="export_type" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="filters" type="json"/>
+            <column name="fields" type="text"/>
+            <column name="status" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_records" type="bigint"/>
+            <column name="file_path" type="varchar(500)"/>
+            <column name="csv_data" type="longtext"/>
+            <column name="file_size" type="bigint"/>
+            <column name="created_at" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="started_at" type="datetime"/>
+            <column name="completed_at" type="datetime"/>
+            <column name="error_message" type="text"/>
+        </createTable>
+        
+        <!-- Create indexes for export_history table -->
+        <createIndex tableName="export_history" indexName="idx_export_reference_id">
+            <column name="reference_id"/>
+        </createIndex>
+        
+        <createIndex tableName="export_history" indexName="idx_export_status">
+            <column name="status"/>
+        </createIndex>
+        
+        <createIndex tableName="export_history" indexName="idx_export_created_at">
+            <column name="created_at"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
