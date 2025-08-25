@@ -5,11 +5,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
+import com.example.employee_managment.annotation.Encrypted;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(com.example.employee_managment.service.encryption.EncryptionEntityListener.class)
 @Table(name = "employees", indexes = {
     @Index(name = "idx_employee_email", columnList = "email"),
     @Index(name = "idx_employee_department", columnList = "department"),
@@ -37,6 +39,7 @@ public class Employee {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
     
+    @Encrypted(sourceField = "email", autoPopulate = true)
     @Column(name = "encrypted_email")
     private String encryptedEmail;
     
